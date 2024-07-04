@@ -1,2 +1,3 @@
-var a = "test3";
+"use strict";
+const a = "test";
 console.log(a);

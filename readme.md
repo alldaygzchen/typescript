@@ -149,4 +149,8 @@ addAndHandle(10, 20, (result) => {
 
 ```
 tsc app.ts --watch
+
+tsc --init
+tsc --watch
+
 ```
