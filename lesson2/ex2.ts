@@ -3,11 +3,11 @@
 //     age: 30,
 //   };
 const personTest: { name: string; age: number } = {
-  name: "gz",
+  name: 'gz',
   age: 30,
 };
 const person = {
-  name: "gz",
+  name: 'gz',
   age: 30,
 };
 
@@ -15,7 +15,7 @@ console.log(person.name);
 console.log(personTest.name);
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// assign labels to number
+// assign labels to enum values
 enum Role {
   ADMIN = 0,
   READ_ONLY = 1,
@@ -40,19 +40,20 @@ let test: {
 };
 
 test = {
-  id: "abc1",
+  id: 'abc1',
   price: 12.99,
-  tags: ["great-offer", "hot-and-new"],
+  tags: ['great-offer', 'hot-and-new'],
   details: {
-    title: "Red Carpet",
-    description: "A great carpet - almost brand-new!",
+    title: 'Red Carpet',
+    description: 'A great carpet - almost brand-new!',
   },
-  remark: ["this is a test", 1, true],
-  role: [1, "1"],
+  remark: ['this is a test', 1, true],
+  role: [1, '1'],
   roleTest: [2, 3],
-  remarkTest: [1, "1"],
-  //   roleTest1: Role.AUTHOR,
-  roleTest1: Role.ADMIN,
+  remarkTest: [1, '1'],
+  roleTest1: Role.ADMIN, //0
+  // roleTest1: Role[Role.ADMIN], // error:trying to access the enum value using its own value
+  // roleTest1: 0, //0
   favoriteActivities: [2.3, 3],
 };
 
@@ -61,3 +62,13 @@ for (const tag of test.tags) {
   //   console.log(tag.map()); //show error
 }
 console.log(test);
+
+enum RoleTest {
+  ADMIN = 'hello',
+  READ_ONLY = 'world',
+  AUTHOR = 7,
+}
+
+console.log(RoleTest.ADMIN);
+console.log(RoleTest.AUTHOR);
+console.log(RoleTest[RoleTest.AUTHOR]);
