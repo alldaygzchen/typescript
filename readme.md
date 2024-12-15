@@ -209,8 +209,100 @@ include,exclude,target,module,lib,sourceMap,rootDir,outDir,removeComments,noEmit
 - bind: Create a new function with a specific this for future use
 ```
 
-# start 49
+# lesson4
+
+- tsc --init
+- tsconfig.json: rootDir, outDir, noEmitOnError
 
 ```
+
+var: js does not know any other scopes than function and global (var does not have block scope)
+
+```
+
+```
+
+#####################
+//default parameter in right
+const add= (a:number,b:number=1)=>{
+  return a+b
+}
+
+// replace curly brace and return
+const add = (a:number,b:number=1) => a+b
+
+####################
+// function types
+let printOutput:(a:number|string)=>void
+printOutput = (output) => {
+  console.log(output);
+};
+
+
+#####################
+
+const button = document.querySelector('button')
+
+// typescript will not complain
+// typecript know what we are infering, so short contax is ok
+if (button){
+  button.addEventListener('click',event=>console.log(event))
+}
+
+##################### Spread Operator
+
+const hobbies = ['Sports','Cooking']
+const activeHobbies = ['Hicking']
+
+activeHobbies.push(hobbies[0],hobbies[1])
+
+// spread operator (spread)
+
+activeHobbies.push(...hobbies)
+const test =['Hicking',...hobbies]
+
+const person = {name:"Max",age:30}
+const copiedPerson = {name2:"gz",age2:31,...person}
+
+##################### Rest Parameters
+
+
+// rest parameter (gather)
+// Gathers arguments into an array of number
+// the array of number is spread
+const add = (...numbers:number[])=>{
+  let result =0
+  return numbers.reduce((curResult,curValue)=>{
+    retunr curResult+curValue
+  },0)
+}
+
+
+const addedNumbers =add(5,10,2,3.7)
+console.log(addedNumbers)
+
+##################### Array and Object Destructuring
+
+// with rest operator
+const [hob1,hob2,...remainingHob] = hobbies
+// rename
+const {name:userName,age} = person
+
+```
+
+# lesson5 (Classes and Interface) 62
+
+- creating objects has two method: classes and object literal
+
+```
+class Department {
+  name: string; // must
+  constructor(n: string) {
+    this.name = n;
+  }
+}
+
+const accounting = new Department('Accounting');
+console.log(accounting);
 
 ```
