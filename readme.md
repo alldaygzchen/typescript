@@ -290,7 +290,7 @@ const {name:userName,age} = person
 
 ```
 
-# lesson5 (Classes and Interface) 62
+# lesson5 (Classes and Interface) not done summarize chap 62 + what is prototype + continue 66
 
 - creating objects has two method: classes and object literal
 
@@ -305,4 +305,16 @@ class Department {
 const accounting = new Department('Accounting');
 console.log(accounting);
 
+```
+
+- typescript class has public and private property(prevent property access from outside)
+
+- shorthand initialization and read on;y properties
+
+```
+class Department{
+
+  constructor(private id readonly:string, public n:string){}
+
+}
 ```
