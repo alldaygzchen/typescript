@@ -318,3 +318,48 @@ class Department{
 
 }
 ```
+
+- Inheritance
+
+```
+class AccountingDepartment extends Department {
+  constructor(id: string, private reports: string[]) {
+    super(id, "Accounting"); // call the base class constructor function
+  }
+
+  addReport(text: string) {
+    this.reports.push(text);
+  }
+
+  printReports() {
+    console.log(this.reports);
+  }
+}
+```
+
+- private properties inside the class cannot be inherited
+- static and non staoc methods are inherited to the subclass amd can be used directly unless overridden
+
+```
+change employees from private to protected
+
+class AccountingDepartment extends Department {
+  constructor(id: string, private reports: string[]) {
+    super(id, "Accounting");
+  }
+
+  addEmployee(name: string): void {
+    if (name === "Max") {
+      return;
+    }
+    this.employees.push(name);
+  }
+
+  addEmployeeExceptMax(name: string): void {
+    if (name === "Max") {
+      return;
+    }
+    this.employees.push(name);
+  }
+}
+```
