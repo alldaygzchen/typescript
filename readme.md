@@ -269,7 +269,6 @@ const copiedPerson = {name2:"gz",age2:31,...person}
 
 // rest parameter (gather)
 // Gathers arguments into an array of number
-// the array of number is spread
 const add = (...numbers:number[])=>{
   let result =0
   return numbers.reduce((curResult,curValue)=>{
@@ -292,6 +291,16 @@ const {name:userName,age} = person
 
 # lesson5 (Classes and Interface) not done summarize chap 62 + what is prototype + continue 66
 
+- event handling (overall system) = event + action(callback)
+- Normally it is async since the callback is triggered only after event occurs ensuring program not blocking
+- Regular function depends on how a function is called (this keyword can change dynamically in callback since it is passed an argument to be executed later)
+- event listener regular function binds in the backgorund, thus this keyword represent the element not undefined or window which is exception
+- Arrow function does not have its own this, thus it will capture from lexical scope first to be stable
+- Arrow function
+  - In objects, arrow function inherits this keyword from the surrounding context (global or outer function)
+  - In classes, arrow functiom is bound to the instance because it is defined as an instance property
+- When encounter callbacks, check it is a regular function or arrow function defined in objects or classes
+
 - creating objects has two method: classes and object literal
 
 ```
@@ -307,9 +316,9 @@ console.log(accounting);
 
 ```
 
-- typescript class has public and private property(prevent property access from outside)
+- typescript class has public and private property (prevent property access from outside)
 
-- shorthand initialization and read on;y properties
+- shorthand initialization and read only properties (values cannot be changed)
 
 ```
 class Department{
@@ -337,8 +346,8 @@ class AccountingDepartment extends Department {
 }
 ```
 
-- private properties inside the class cannot be inherited
-- static and non staoc methods are inherited to the subclass amd can be used directly unless overridden
+- private properties inside the class cannot be inherited (use protected)
+- static and non static methods are inherited to the subclass and can be used directly unless overridden
 
 ```
 change employees from private to protected
@@ -360,6 +369,177 @@ class AccountingDepartment extends Department {
       return;
     }
     this.employees.push(name);
+  }
+}
+```
+
+- getter and setter used for encapsulation
+- they are also computed properties
+
+```
+  private lastReport: string;
+
+  get mostRecentReport() {
+    if (this.lastReport) {
+      return this.lastReport;
+    }
+    throw new Error("No report found");
+  }
+  set mostRecentReport(value: string) {
+    if (!value) {
+      throw new Error("Please pass in a valud value");
+    }
+    this.addReport(value);
+  }
+
+  // outside the class
+  accounting.mostRecentReport = "Hello world";
+  console.log("accounting.mostRecentReport", accounting.mostRecentReport);
+
+```
+
+- static property and method
+
+```
+  static fiscalYear = 2024;
+
+  static createEmployee(name: string) {
+    return { name: name };
+  }
+
+  // access static methods and properties inside the classes
+  Department.fiscalYear;
+```
+
+- Abstract Classes (blue print for classes)
+- Abstract classes are useful when you want all child classes to follow the same rules but allow them to define their own details.
+- Do not have to provide the concrete value in the base class but the subclass
+- abstract class cannot be instantiated itself
+
+```
+abstract class Department {
+  abstract propertyName: type;
+  abstract describe(this: Department): void;
+}
+```
+
+- Singletons and Private Constructors
+
+```
+class AccountingDepartment extends Department {
+
+    private static instance: AccountingDepartment;
+    private constructor(id: string, private reports: string[]) {
+      super(id, "Accounting");
+      this.lastReport = reports[0];
+    }
+
+    static getInstance() {
+      if (AccountingDepartment.instance) {
+        return AccountingDepartment.instance;
+      }
+      AccountingDepartment.instance = new AccountingDepartment("d2", []);
+      return AccountingDepartment.instance;
+    }
+
+}
+
+const accounting = AccountingDepartment.getInstance();
+const accounting2 = AccountingDepartment.getInstance();
+
+console.log("accounting", accounting);
+console.log("accounting2", accounting2);
+```
+
+- A first interface
+- Describe the structure of object
+- It is not a blueprint, is is just as a custum type
+- Do not enter concrete value
+- Use interface when you want to define a shape of an object that might be extended later.
+- Use type when you need more complex type compositions like unions, intersections, or mapped types.
+
+```
+interface Person {
+  name: string;
+  age: number;
+  greet(phrase: string): void;
+}
+
+// type Person = {
+//   name: string;
+//   age: number;
+//   greet(phrase: string): void;
+// };
+
+let user1: Person = {
+  name: "gz",
+  age: 31,
+  greet(phrase: string) {
+    console.log(phrase);
+  },
+};
+
+```
+
+- Using Interfaces with Classes
+- interface and abstract class (can contain parts of concrete implementation)
+- interface can be used as a contract of class
+
+```
+interface Greetable {
+  name: string;
+  greet(phrase: string): void;
+}
+
+// cannot add age property
+let user1: Greetable = {
+  name: "gz",
+  greet(phrase: string) {
+    console.log(phrase);
+  },
+};
+
+// we can implement multiple interface
+class Person implements Greetable {
+  constructor(public name: string, public age: number) {}
+  greet(phrase: string) {
+    console.log(phrase + "" + this.name);
+  }
+}
+
+```
+
+- readonly interface properties
+- readonly set to the interface just like base class
+
+```
+interface Greetable {
+  readonly name: string;
+  greet(phrase: string): void;
+}
+
+```
+
+- Extending Interface
+
+```
+// we can extend multiple interface
+interface Greetable extends Named {
+  greet(phrase: string): void;
+}
+
+let user1: Greetable = {
+  name: "gz",
+  greet(phrase: string) {
+    console.log(phrase);
+  },
+};
+
+// we can implement multiple interface
+class Person implements Greetable {
+  constructor(public name: string, public age: number) {}
+  greet(phrase: string) {
+    console.log(phrase + "" + this.name);
   }
 }
 ```
