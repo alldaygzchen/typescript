@@ -543,3 +543,73 @@ class Person implements Greetable {
   }
 }
 ```
+
+- interface as function type
+
+```
+
+// functions are objects
+interface AddFn2 {
+  (a: number, b: number): number;
+}
+
+let add2: AddFn2;
+add2 = (n1: number, n2: number) => {
+  return n1 + n2;
+};
+
+```
+
+- Optional Parameter and Properties
+
+```
+interface Named {
+  readonly name: string;
+  outputName?: string;
+}
+
+
+class Person implements Greetable {
+  name?: string;
+  age = 30;
+  constructor(n?: string) {
+    this.name = n;
+  }
+  greet(phrase: string) {
+    if (this.name) {
+      console.log(phrase + "" + this.name);
+    } else {
+      console.log("HI");
+    }
+  }
+}
+
+let user2 = new Person();
+
+```
+
+# Advance types
+
+## Intersection types
+
+```
+
+type Admin = {
+  name: string;
+  privileges: string[];
+};
+
+type Employee = {
+  name: string;
+  startDate: Date;
+};
+
+type ElevatedEmployee = Admin & Employee;
+
+type Combinable = string | number;
+type Numeric = number | boolean;
+type Universal = Combinable & Numeric;
+
+```
+
+- 85
