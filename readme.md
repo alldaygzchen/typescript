@@ -612,4 +612,163 @@ type Universal = Combinable & Numeric;
 
 ```
 
-- 85
+## typeGuard
+
+- Check certain propterties and methods exists
+
+```
+
+//type guard
+//typeof runs on runtime
+function add3(a: Combinable, b: Combinable) {
+  if (typeof a === "string" || typeof b === "string") {
+    return a.toString() + b.toString();
+  }
+  return a + b;
+}
+
+// objects
+type UnknownEmployee = Employee | Admin;
+function printEmployeeInformation(emp: UnknownEmployee) {
+  console.log("Name: " + emp.name);
+  if ("privileges" in emp) {
+    console.log("Privileges:" + emp.privileges);
+  }
+}
+
+// instance (Execute in runtime)
+function useVehicle(vehicle: Vehicle) {
+  vehicle.drive();
+  if (vehicle instanceof Truck) {
+    vehicle.loadCargo(1000);
+  }
+}
+
+```
+
+## Discriminated Unions
+
+- works for classes and interface
+
+```
+interface Bird {
+  type: "bird";
+  flyingSpeed: number;
+}
+```
+
+## Type Casting
+
+- Tell typescript some value are a specific type where ts is not able to detect on its own
+- Treat the value as a specific type, regardless of what it actually is at runtime.
+- ! means it will never yield null or undefined
+
+```
+// HTMLParagraphElement
+const paragraph = document.querySelector("p");
+// HTMLElement (not clear, also properties and methods can not be used)
+const testInput = document.getElementById("user-input");
+
+// sol1:
+// const userInputElement = <HTMLInputElement>(
+//   document.getElementById("user-input")!
+// );
+
+// sol2:
+const userInputElement = document.getElementById(
+  "user-input"
+)! as HTMLInputElement;
+
+userInputElement.value = "Hola";
+
+// examples
+const userInputElement2 = document.getElementById("user-input");
+
+if (userInputElement2) {
+  (userInputElement2 as HTMLInputElement).value = "Hi there!";
+}
+
+
+```
+
+## Index properties
+
+```
+interface ErrorContainer {
+  //   id: number; violate the rule
+  [prop: string]: string;
+}
+
+const errorBag: ErrorContainer = {
+  email: "Not a valid email",
+  username: "Must start with a capital character",
+};
+
+```
+
+## Function Overload
+
+- Function overload is a way to define multiple versions of a function in TypeScript with different input types or parameter combinations, but only one implementation of the function.
+
+```
+function addd(a: number, b: number): number;
+function addd(a: string, b: string): string;
+function addd(a: number, b: string): string;
+function addd(a: string, b: number): string;
+function addd(a: Combinable, b: Combinable) {
+  if (typeof a === "string" || typeof b === "string") {
+    return a.toString() + b.toString();
+  }
+  return a + b;
+}
+
+// ts is not really good enough for analyzing code
+// const result = addd("alex", "li") as string;
+const result = addd("alex", "li");
+result.split("");
+
+```
+
+## Optional Chaining
+
+```
+const fetchedUserData = {
+  id: "ul",
+  name: "Max",
+  //   job: {
+  //     title: "CEO",
+  //     description: "My own company",
+  //   },
+} as {
+  id: string;
+  name: string;
+  job?: {
+    title: string;
+    description: string;
+  };
+};
+
+// console.log(fetchedUserData.job && fetchedUserData.job.title);
+console.log(fetchedUserData?.job?.title);
+
+```
+
+## Nullish coalescing
+
+```
+const userInput = "";
+const storedData = userInput || "DEFAULT"; // storedData = 'DEFAULT'
+const storedData2 = userInput ?? "DEFAULT"; // storedData = ''
+
+```
+
+## Exercise Error
+
+```
+function size(input: string | number) {
+  if (<string>input) { //  It just makes the compiler think input is a string.
+    return input.length; // Runtime error if `input` is a number
+  }
+  return input;
+}
+```
