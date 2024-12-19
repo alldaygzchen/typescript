@@ -289,13 +289,13 @@ const {name:userName,age} = person
 
 ```
 
-# lesson5 (Classes and Interface) not done summarize chap 62 + what is prototype + continue 66
+# lesson5 (Classes and Interface)
 
 - event handling (overall system) = event + action(callback)
 - Normally it is async since the callback is triggered only after event occurs ensuring program not blocking
 - Regular function depends on how a function is called (this keyword can change dynamically in callback since it is passed an argument to be executed later)
-- event listener regular function binds in the backgorund, thus this keyword represent the element not undefined or window which is exception
-- Arrow function does not have its own this, thus it will capture from lexical scope first to be stable
+- event listener regular function binds in the background, thus this keyword represent the element but not undefined or window which is exception
+- Arrow function does not have its own this, thus it will capture from lexical scope first to be stable which is normally outer scope or global
 - Arrow function
   - In objects, arrow function inherits this keyword from the surrounding context (global or outer function)
   - In classes, arrow functiom is bound to the instance because it is defined as an instance property
@@ -306,14 +306,23 @@ const {name:userName,age} = person
 ```
 class Department {
   name: string; // must
-  constructor(n: string) {
+  age:number;
+  constructor(n: string,a:number) {
     this.name = n;
+    this.age = a
   }
 }
 
 const accounting = new Department('Accounting');
 console.log(accounting);
 
+```
+
+```
+const department = {
+  name:"luxury",
+  age:30
+}
 ```
 
 - typescript class has public and private property (prevent property access from outside)
@@ -328,7 +337,7 @@ class Department{
 }
 ```
 
-- Inheritance
+## Inheritance
 
 ```
 class AccountingDepartment extends Department {
@@ -398,7 +407,7 @@ class AccountingDepartment extends Department {
 
 ```
 
-- static property and method
+## static property and method
 
 ```
   static fiscalYear = 2024;
@@ -411,7 +420,8 @@ class AccountingDepartment extends Department {
   Department.fiscalYear;
 ```
 
-- Abstract Classes (blue print for classes)
+## Abstract Classes (blue print for classes)
+
 - Abstract classes are useful when you want all child classes to follow the same rules but allow them to define their own details.
 - Do not have to provide the concrete value in the base class but the subclass
 - abstract class cannot be instantiated itself
@@ -423,12 +433,13 @@ abstract class Department {
 }
 ```
 
-- Singletons and Private Constructors
+## Singletons and Private Constructors
 
 ```
 class AccountingDepartment extends Department {
 
     private static instance: AccountingDepartment;
+    // private constructor
     private constructor(id: string, private reports: string[]) {
       super(id, "Accounting");
       this.lastReport = reports[0];
@@ -444,6 +455,7 @@ class AccountingDepartment extends Department {
 
 }
 
+// same
 const accounting = AccountingDepartment.getInstance();
 const accounting2 = AccountingDepartment.getInstance();
 
@@ -451,9 +463,10 @@ console.log("accounting", accounting);
 console.log("accounting2", accounting2);
 ```
 
-- A first interface
+## A first interface
+
 - Describe the structure of object
-- It is not a blueprint, is is just as a custum type
+- It is not a blueprint, it is just as a custom type
 - Do not enter concrete value
 - Use interface when you want to define a shape of an object that might be extended later.
 - Use type when you need more complex type compositions like unions, intersections, or mapped types.
@@ -481,7 +494,8 @@ let user1: Person = {
 
 ```
 
-- Using Interfaces with Classes
+## Using Interfaces with Classes
+
 - interface and abstract class (can contain parts of concrete implementation)
 - interface can be used as a contract of class
 
@@ -520,7 +534,7 @@ interface Greetable {
 
 ```
 
-- Extending Interface
+## Extending Interface
 
 ```
 // we can extend multiple interface
@@ -544,7 +558,7 @@ class Person implements Greetable {
 }
 ```
 
-- interface as function type
+## interface as function type
 
 ```
 
@@ -572,6 +586,7 @@ interface Named {
 class Person implements Greetable {
   name?: string;
   age = 30;
+  // n parameter is optional
   constructor(n?: string) {
     this.name = n;
   }
@@ -666,7 +681,7 @@ interface Bird {
 ```
 // HTMLParagraphElement
 const paragraph = document.querySelector("p");
-// HTMLElement (not clear, also properties and methods can not be used)
+// HTMLElement (Suppose the html is an input tag, the type is HTMLElement which is not clear, also properties and methods can not be used)
 const testInput = document.getElementById("user-input");
 
 // sol1:
@@ -771,4 +786,67 @@ function size(input: string | number) {
   }
   return input;
 }
+```
+
+# Generics
+
+- generics are a way to create reusable and type-safe components, classes, or functions that can work with a variety of types
+- the following are the result of using generic types => ensures type safety, and provides better developer experience by catching errors at compile time.
+
+```
+const names: string[] = ["a", "b"];
+const names2: Array<string> = ["a", "b"];
+console.log(names[0].split(" "));
+
+// default is Promise<unknown>
+// change to Promise<string> and ts will help us
+const promise: Promise<string> = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve("This is done");
+  }, 2000);
+});
+
+promise.then((data) => {
+  data.split("");
+});
+
+```
+
+- placeholders allow TypeScript to understand that objA and objB can be of different types, and they will keep their specific types.
+
+```
+function merge<T extends Object, U>(objA: T, objB: U) {
+  return Object.assign(objA, objB);
+}
+// ts will infer the types for us
+const mergedObj = merge({ name: "Max" }, { age: 30 });
+```
+
+- generics are often used for both objects and arrays in TypeScript because they allow you to work with more specific types, especially when those types are nested or dynamic.
+
+```
+function printFirstElement<T>(arr: T[]): T {
+  return arr[0];
+}
+const numbers = [1, 2, 3];
+const strings = ["a", "b", "c"];
+
+printFirstElement(numbers);
+printFirstElement(strings);
+
+```
+
+- working with constraints
+
+```
+function merge2<T extends Object, U extends Object>(objA: T, objB: U) {
+  return Object.assign(objA, objB);
+}
+
+```
+
+- another generic function
+
+```
+
 ```
