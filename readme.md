@@ -790,7 +790,7 @@ function size(input: string | number) {
 
 # Generics
 
-- generics are a way to create reusable and type-safe components, classes, or functions that can work with a variety of types
+- generics are a way to create flexible and type-safe components, classes, or functions that can work with a variety of types
 - the following are the result of using generic types => ensures type safety, and provides better developer experience by catching errors at compile time.
 
 ```
@@ -845,7 +845,183 @@ function merge2<T extends Object, U extends Object>(objA: T, objB: U) {
 
 ```
 
-- another generic function
+- another generic function (Quite good example)
+
+```
+interface Lengthy {
+  length: number;
+}
+
+function countAndDescribe<T extends Lengthy>(element: T): [T, string] {
+  let descriptionText = 'Got no value';
+  if (element.length === 1) {
+    descriptionText = 'Got 1 element';
+  } else if (element.length > 1) {
+    descriptionText = 'Got' + element.length + ' elements.';
+  }
+
+  return [element, descriptionText];
+}
+
+console.log(countAndDescribe('Hi there'));
+console.log(countAndDescribe('Sports cooking'));
+
+```
+
+## the keyof constraint
+
+```
+function extractAndConvert<T extends object, U extends keyof T>(obj:T,key:U){
+return 'Value: '+obj[key]
+}
+
+extractAndConvert({},'name')
+```
+
+## Generic Classes
+
+```
+class DataStorage<T extends string | number | boolean> {
+  private data: T[] = [];
+
+  addItem(item: T) {
+    this.data.push(item);
+  }
+
+  removeItem(item: T) {
+    if (this.data.indexOf(item) === -1) {
+      return;
+    }
+
+    this.data.splice(this.data.indexOf(item), 1);
+  }
+
+  getItems() {
+    return [...this.data];
+  }
+}
+
+const textStorage = new DataStorage<string>();
+```
+
+## Additional Examples
+
+```
+type InputType = "text" | "number" | "select";
+
+interface InputProps<T> {
+  type: InputType;
+  value: T; // The value's type depends on the input
+  onChange: (value: T) => void;
+}
+
+function Input<T>({ type, value, onChange }: InputProps<T>) {
+  return (
+    <div>
+      {type === "text" || type === "number" ? (
+        <input
+          type={type}
+          value={String(value)}
+          onChange={(e) => onChange(e.target.value as unknown as T)}
+        />
+      ) : type === "select" ? (
+        <select
+          value={String(value)}
+          onChange={(e) => onChange(e.target.value as unknown as T)}
+        >
+          {/* Example options */}
+          <option value="Option 1">Option 1</option>
+          <option value="Option 2">Option 2</option>
+        </select>
+      ) : null}
+    </div>
+  );
+}
+
+// Example Usage
+<Input<string>
+  type="text"
+  value="Hello"
+  onChange={(value) => console.log(value)}
+/>;
+
+<Input<number>
+  type="number"
+  value={42}
+  onChange={(value) => console.log(value)}
+/>;
+
+```
+
+## Generic Utility Types
+
+- Partial<>, Readonly<>
+
+```
+interface CourseGoal {
+  title: string;
+  description: string;
+  completeUntil: Date;
+}
+
+function createCourseGoal(
+  title: string,
+  description: string,
+  date: Date
+): CourseGoal {
+  let courseGoal: Partial<CourseGoal> = {};
+  courseGoal.title = title;
+  courseGoal.description = description;
+  courseGoal.completeUntil = date;
+  return courseGoal as CourseGoal;
+}
+
+```
+
+```
+const namesTest: Readonly<string[]> = ['Max', 'Anna'];
+```
+
+## Generic Types vs Union Types
+
+- data: T[] vs data: (string | number | boolean) []
+  - where <T extends string | number | boolean>
+- Union types are not stricted as generic types
+
+# Decorator
+
+- useful for meta programming
+- Meta-programming: Meta-programming (with decorators) is a way to add or change behavior dynamically without modifying the original code directly.
+  - Decorators provide a structured and reusable way to achieve this.
+  - Add behavior (e.g., log something).
+  - Modify behavior (e.g., validate input).
+  - Change how code works (e.g., attach metadata).
+- tsconfig.json => "experimentalDecorators": true
+- decorator is a function and it is excuted when it is defined not instantiated
+
+## introduction
+
+```
+function Logger(constructor: Function) {
+  console.log('Logging...');
+  console.log(constructor);
+}
+
+@Logger
+class Person {
+  name = 'Max';
+  constructor() {
+    // console.log('Creating person object');
+  }
+}
+
+const pers = new Person();
+
+```
+
+## decorator factory
+
+- 107
 
 ```
 
