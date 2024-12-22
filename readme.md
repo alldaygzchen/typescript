@@ -1001,6 +1001,8 @@ const namesTest: Readonly<string[]> = ['Max', 'Anna'];
 
 ## introduction
 
+### constructor function for Class
+
 ```
 function Logger(constructor: Function) {
   console.log('Logging...');
@@ -1021,8 +1023,271 @@ const pers = new Person();
 
 ## decorator factory
 
-- 107
+```
+function Logger(logString: string) {
+  return function (constructor: Function) {
+    console.log(logString);
+    console.log(constructor);
+  };
+}
+@Logger('Logging-person')
+class Person {
+  name = 'Max';
+  constructor() {
+    console.log('Creating person object');
+  }
+}
+
+const pers = new Person();
 
 ```
 
+## Buiding more useful decorators
+
 ```
+An example of Angular
+
+function WithTemplate(template: string, hookId: string) {
+  return function (constructor: any) {
+    console.log('Template');
+    // console.log(constructor);
+    const hookEl = document.getElementById(hookId);
+    const p = new constructor();
+    if (hookEl) {
+      hookEl.innerHTML = template;
+      hookEl.querySelector('h1')!.textContent = p.name;
+    }
+  };
+}
+@WithTemplate('<h1>My Person Object</h1>', 'app')
+class Person {
+  name = 'Max';
+  constructor() {
+    console.log('Creating person object');
+  }
+}
+const pers = new Person();
+
+```
+
+## Adding Multiple Decorators
+
+- Execute bottom up
+
+```
+function Logger(logString: string) {
+  console.log('logger decorator function');
+  return function (constructor: Function) {
+    console.log(logString);
+    console.log(constructor);
+  };
+}
+
+function WithTemplate(template: string, hookId: string) {
+  console.log('withTemplate decorator function');
+  return function (constructor: any) {
+    // console.log(constructor);
+    const hookEl = document.getElementById(hookId);
+    const p = new constructor();
+    if (hookEl) {
+      hookEl.innerHTML = template;
+      hookEl.querySelector('h1')!.textContent = p.name;
+    }
+  };
+}
+@Logger('Logging')
+@WithTemplate('<h1>My Person Object</h1>', 'app')
+class Person {
+  name = 'Max';
+  constructor() {
+    console.log('Creating person object');
+  }
+}
+const pers = new Person();
+
+```
+
+## Diving into Property Decorators
+
+### review of prototype
+
+- only constructor function have prototype property
+- person(instance) -> person.＿＿proto＿＿ [Person.prototype (instance)] -> person.＿＿proto＿＿.＿＿proto\_\_[Object.prototype (instance)]
+
+### target(prototype of the object), propertyName
+
+```
+function Log(target: any, propertyName: string | Symbol) {
+  console.log('Property decorator');
+  console.log(target, propertyName); // prototype of object and property name
+}
+
+class Product {
+  @Log
+  title: string;
+  private _price: number;
+  constructor(t: string, p: number) {
+    this.title = t;
+    this._price = p;
+    console.log('Creating Product object');
+  }
+  // constructor(public title: string, private _price: number) {}
+  set price(val: number) {
+    if (val > 0) {
+      this._price = val;
+    } else {
+      throw new Error('Invalid price - should be positive');
+    }
+  }
+  getPriceWithTax(tax: number) {
+    return this.price * (1 + tax);
+  }
+}
+
+const p1 = new Product('Book', 19);
+
+```
+
+## Diving into others
+
+- class: constructor: Function
+- property: target(prototype of object), propertyName(property name)
+- accessor: targe(prototype of object), name(accessor name), descriptor: PropertyDescriptor
+- method: target(prototype of object), name(method name), descriptor: PropertyDescriptor
+- parameter:target(prototype of object), name(parameter name), position: number
+
+```
+function Log(target: any, propertyName: string | Symbol) {
+  console.log('Property decorator');
+  console.log(target, propertyName); // prototype of object and property name
+}
+
+function Log2(target: any, name: string, descriptor: PropertyDescriptor) {
+  console.log('Accessor decorator');
+  console.log(target); // prototype of object
+  console.log(name); // accessor name
+  console.log(descriptor); //description
+}
+
+function Log3(
+  target: any,
+  name: string | Symbol,
+  descriptor: PropertyDescriptor
+) {
+  console.log('Method decorator');
+  console.log(target); // prototype of object
+  console.log(name); // method name
+  console.log(descriptor); //description
+}
+
+function Log4(target: any, name: string | Symbol, position: number) {
+  console.log('Parameter decorator');
+  console.log(target); // prototype of object
+  console.log(name); // parameter name
+  console.log(position);
+}
+```
+
+## Additional
+
+```
+type HasName = { name: string };
+
+const obj: HasName = { name: 'Alice', age: 25, city: 'NYC' }; // This is valid.
+```
+
+## Additional
+
+- Instance : creating using class or constructor function, it is an object
+
+## Return a class in a class decorator
+
+- the return class will run only if it is initialize
+- extend something that can new() and return an instance containing name property
+
+```
+function WithTemplate(template: string, hookId: string) {
+  return function <T extends { new (...args: any[]): { name: string } }>(
+    originalConstructor: T
+  ) {
+    return class extends originalConstructor {
+      constructor(..._: any[]) {
+        super();
+        console.log('Template');
+        const hookEl = document.getElementById(hookId);
+        if (hookEl) {
+          hookEl.querySelector('h1')!.textContent = this.name;
+        }
+      }
+    };
+  };
+}
+
+@WithTemplate('<h1>My Person Object</h1>', 'app')
+class Person {
+  name = 'Max';
+  constructor() {
+    console.log('Creating person object');
+  }
+}
+const pers = new Person();
+
+```
+
+- class, methods, accessors decorator can be returned
+
+```
+The getter ensures that the method is bound to the instance (p) before it’s passed to the event listener.
+```
+
+```
+class Example {
+  value = 'I am bound';
+
+  get boundMethod() {
+    return function () {
+      console.log(this.value);
+    }.bind(this);
+  }
+}
+
+const obj = new Example();
+const unbound = obj.boundMethod; // Getter runs, binding happens here
+unbound(); // Logs: "I am bound"
+```
+
+```
+function AutoBind(
+  target: any,
+  methodName: string,
+  descriptor: PropertyDescriptor
+) {
+  console.log('descriptior', descriptor);
+  const originalMethod = descriptor.value;
+  const adjDescriptor: PropertyDescriptor = {
+    configurable: true,
+    enumerable: false,
+    get() {
+      const boundFn = originalMethod.bind(this);
+      return boundFn;
+    },
+  };
+  console.log('adjDescriptor', adjDescriptor);
+  return adjDescriptor;
+}
+
+class Printer {
+  message = 'This works';
+  @AutoBind
+  showMessage() {
+    console.log(this.message);
+  }
+}
+
+const p = new Printer();
+const button = document.querySelector('button')!;
+button.addEventListener('click', p.showMessage); //callback
+
+```
+
+- 116
