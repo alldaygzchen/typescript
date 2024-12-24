@@ -1190,6 +1190,8 @@ function Log4(target: any, name: string | Symbol, position: number) {
 
 ## Additional
 
+- at least these properties
+
 ```
 type HasName = { name: string };
 
@@ -1203,7 +1205,7 @@ const obj: HasName = { name: 'Alice', age: 25, city: 'NYC' }; // This is valid.
 ## Return a class in a class decorator
 
 - the return class will run only if it is initialize
-- extend something that can new() and return an instance containing name property
+- extend something that can new() [originalConstructor ] and return an instance that contains original property
 
 ```
 function WithTemplate(template: string, hookId: string) {
@@ -1238,7 +1240,10 @@ const pers = new Person();
 
 ```
 The getter ensures that the method is bound to the instance (p) before it’s passed to the event listener.
+Use get instead of replacing the description.value
 ```
+
+### autobind example
 
 ```
 class Example {
@@ -1290,4 +1295,105 @@ button.addEventListener('click', p.showMessage); //callback
 
 ```
 
-- 116
+### Additional
+
+```
+The arrow function does not rebind this to the element that triggered the event.
+```
+
+### Using decorator in validations
+
+```
+interface ValidatorConfig {
+  [property: string]: {
+    [validatableProp: string]: string[]; // ['required', 'positive']
+  };
+}
+
+const registeredValidators: ValidatorConfig = {};
+
+function Required(target: any, propName: string) {
+  registeredValidators[target.constructor.name] = {
+    ...registeredValidators[target.constructor.name],
+    [propName]: [
+      ...(registeredValidators[target.constructor.name]?.[propName] ?? []),
+      "required",
+    ],
+  };
+}
+
+function PositiveNumber(target: any, propName: string) {
+  registeredValidators[target.constructor.name] = {
+    ...registeredValidators[target.constructor.name],
+    [propName]: [
+      ...(registeredValidators[target.constructor.name]?.[propName] ?? []),
+      "positive",
+    ],
+  };
+}
+
+function validate(obj: any) {
+  const objValidatorConfig = registeredValidators[obj.constructor.name];
+  console.log("objValidatorConfig", objValidatorConfig);
+  if (!objValidatorConfig) {
+    return true;
+  }
+  let isValid = true;
+  for (const prop in objValidatorConfig) {
+    for (const validator of objValidatorConfig[prop]) {
+      switch (validator) {
+        case "required":
+          isValid = isValid && !!obj[prop];
+          break;
+        case "positive":
+          isValid = isValid && obj[prop] > 0;
+          break;
+      }
+    }
+  }
+  return isValid;
+}
+
+class Course {
+  @Required
+  title: string;
+  @PositiveNumber
+  price: number;
+
+  constructor(t: string, p: number) {
+    this.title = t;
+    this.price = p;
+  }
+}
+const courseForm = document.querySelector("form")!;
+courseForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const titleEl = document.getElementById("title") as HTMLInputElement;
+  const priceEl = document.getElementById("price") as HTMLInputElement;
+
+  const title = titleEl.value;
+  const price = +priceEl.value;
+
+  const createdCourse = new Course(title, price);
+  if (!validate(createdCourse)) {
+    alert("Invalid input, please try again!");
+    return;
+  }
+  console.log(createdCourse);
+});
+
+```
+
+### Additional
+
+- ts class validators (https://github.com/typestack/class-validator)
+
+### Exercise
+
+- Html template tag
+
+```
+Not Rendered: Content inside the <template> tag is not displayed on the page.
+Reusable: You can clone and insert the content into the DOM using JavaScript.
+
+```
