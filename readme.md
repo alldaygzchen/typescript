@@ -1397,3 +1397,92 @@ Not Rendered: Content inside the <template> tag is not displayed on the page.
 Reusable: You can clone and insert the content into the DOM using JavaScript.
 
 ```
+
+- addProject and moveProject contains this.updateListeners() (project-state.ts)
+  which means adding and updating will cause re-rendering
+
+# Modules and Namespace
+
+- Splitting code into multiple files
+  - Namespaces and file bundling(multiple to one) vs ES6 Imports/Exports
+- Advantage of ES6 imports and exports
+  - per-file compilation but single script import
+  - we can still bundle all the files uaing third party such as web-pack
+- Example for Es6 Imports/Exports
+- "target": "es6" , "module": "es2015" in tsconfig.json
+- Both import the files that are needed not all
+
+```
+import { Component } from './base-component.js';
+```
+
+- export vs export default
+- export :
+  - Used to export multiple named values from a module.
+  - Each exported value must be imported using the same name.
+- export default
+  - Used to export a single value from a module.
+  - The default export can be imported with any name without curly braces.
+
+```
+export const myFunction = () => { /* code */ };
+export const myVariable = 42;
+const myDefaultFunction = () => { /* code */ };
+export default myDefaultFunction;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+import myDefaultFunc, { myFunction, myVariable } from './module.js';
+```
+
+- Without type="module"
+  - Global Scope: The code inside the script runs in the global scope. Variables and functions declared in the script are accessible globally.
+  - No Imports/Exports: You cannot use import and export statements. All code must be contained within the script or included using traditional script tags.
+  - Execution Order: Scripts without type="module" are not deferred by default. They execute immediately when the browser encounters them, unless the defer attribute is used.
+  - Scripts are not in strict mode by default, though you can enable it manually by adding "use strict"; at the beginning of the script.
+
+```
+import * as Validation from "<filepath>"
+=> Validation.Validatable.......
+
+import {autobind as Autobind} from  "<filepath>"
+=> @Autobind
+```
+
+- Does the following run once if inported in multiple files
+  - yes
+
+```
+export const projectState = ProjectState.getInstance();
+```
+
+- webpack advantage: less requests (single file) and browser support
+
+# Using webpack with typescript
+
+## Why do we need it?
+
+- Code bundles, less import required
+- Optimized (minified) code, less code to download
+- More build steps can be added easily such as development server
+
+## Install
+
+- npm install --save-dev webpack webpack-cli webpack-dev-server typescript ts-loader
+
+## Adding entry and Output Configuration
+
+```
+tscconfig.json => // "rootDir": "./src"
+webpack.config.js =>
+  const path = require("path");
+
+module.exports = {
+  entry: "./src/app.ts",
+  output: {
+    filename: "bundle.js",
+    path: path.resolve(__dirname, "dist"),
+  },
+};
+
+```
+
+- 156
