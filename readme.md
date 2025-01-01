@@ -1466,23 +1466,101 @@ export const projectState = ProjectState.getInstance();
 
 ## Install
 
-- npm install --save-dev webpack webpack-cli webpack-dev-server typescript ts-loader
+- npm install --save-dev webpack webpack-cli webpack-dev-server typescript ts-loader clean-webpack-plugin
 
 ## Adding entry and Output Configuration
 
+## Adding typescript support with the ts-loader package
+
+## Adjust Webpack Config
+
+## Finishing the setup and adding webpack-dev-server
+
+## Adding a Production Workflow
+
 ```
-tscconfig.json => // "rootDir": "./src"
+tscconfig.json =>
+
+  // "rootDir": "./src"
+  // "sourceMap":true
+```
+
+### development
+
+```
 webpack.config.js =>
   const path = require("path");
 
+  module.exports = {
+    mode: "development",
+    entry: "./src/app.ts",
+    devServer: {
+      static: [
+        {
+          directory: path.join(__dirname, "/"),
+        },
+      ],
+      compress: true,
+      port: 9000,
+      devMiddleware: {
+        publicPath: "/dist/", // URL from which webpack-dev-server serves the files
+      },
+    },
+    output: {
+      filename: "bundle.js",
+      path: path.resolve(__dirname, "dist"),
+      publicPath: "/dist/", // Public URL of the output directory when referenced in a browser
+    },
+    devtool: "inline-source-map",
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          use: "ts-loader",
+          exclude: /node_modules/,
+        },
+      ],
+    },
+    resolve: {
+      extensions: [".ts", ".js"],
+    },
+  };
+
+```
+
+### production
+
+```
+const path = require("path");
+const CleanPlugin = require("clean-webpack-plugin");
+
 module.exports = {
+  mode: "production",
   entry: "./src/app.ts",
+  devServer: {
+    static: [
+      {
+        directory: path.join(__dirname, "/"),
+      },
+    ],
+  },
   output: {
     filename: "bundle.js",
     path: path.resolve(__dirname, "dist"),
   },
+  devtool: false,
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: "ts-loader",
+        exclude: /node_modules/,
+      },
+    ],
+  },
+  resolve: {
+    extensions: [".ts", ".js"],
+  },
+  plugins: [new CleanPlugin.CleanWebpackPlugin()],
 };
-
 ```
-
-- 156
