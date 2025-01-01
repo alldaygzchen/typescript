@@ -1564,3 +1564,81 @@ module.exports = {
   plugins: [new CleanPlugin.CleanWebpackPlugin()],
 };
 ```
+
+# 3rd Party Libraries and typescript
+
+## Install env
+
+- npm init
+- npm install --save-dev webpack webpack-cli webpack-dev-server typescript ts-loader
+- tsc --init
+- webpack.config.js
+- npm i --save lodash
+- npm install --save-dev @types/lodash
+
+## How to use js libraries in ts projects
+
+- https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types
+
+## Ts Library: class-transformer ( works without any TypeScript-specific features so it can be used in js)
+
+- npm install class-transformer --save
+- npm install reflect-metadata --save
+
+```
+import "reflect-metadata";
+import { plainToInstance } from "class-transformer";
+import { Product } from "./product.model";
+
+const products = [
+  { title: "A Carpet", price: 12.99 },
+  { title: "A Book", price: 14.99 },
+];
+
+const loadedProducts = plainToInstance(Product, products);
+for (const prod of loadedProducts) {
+  console.log(prod.getInformation());
+}
+
+
+```
+
+## TS Library: class-validator
+
+- npm install class-validator --save
+
+```
+import { IsNotEmpty, IsNumber, IsPositive } from "class-validator";
+
+export class Product {
+  @IsNotEmpty()
+  title: string;
+  @IsNumber()
+  @IsPositive()
+  price: number;
+
+  constructor(title: string, price: number) {
+    this.title = title;
+    this.price = price;
+  }
+
+  getInformation() {
+    return [this.title, `$${this.price}`];
+  }
+}
+
+import { validate } from "class-validator";
+
+const newProd = new Product("", -5.99);
+validate(newProd).then((errors) => {
+  if (errors.length > 0) {
+    console.log("VALIDATION ERRORS!");
+    console.log(errors);
+  } else {
+    console.log(newProd.getInformation());
+  }
+});
+
+// not running last
+console.log("new info", newProd.getInformation());
+```
