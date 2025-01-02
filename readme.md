@@ -1642,3 +1642,118 @@ validate(newProd).then((errors) => {
 // not running last
 console.log("new info", newProd.getInformation());
 ```
+
+## Additional: when to use promise and async await
+
+```
+function fetchData() {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve('Data fetched');
+    }, 1000);
+  });
+}
+
+fetchData()
+  .then(data => {
+    console.log(data);
+    return fetchData();
+  })
+  .then(data => {
+    console.log(data);
+  })
+  .catch(error => {
+    console.error(error);
+  });
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+async function fetchDataAsync() {
+  try {
+    const data1 = await fetchData();
+    console.log(data1);
+    const data2 = await fetchData();
+    console.log(data2);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+fetchDataAsync();
+```
+
+# Select and Share a place app
+
+### Installation
+
+- copy package.json, tsconfig.json (written by yourself), webpack.config.js (written by yourself)
+- npm install
+
+### Additional
+
+- http code: 2xx (success), 3xx(redirection), 4xx(client error), 5xx(server error)
+- fetch vs axios
+  - fetch: Only rejects promises for network errors, not for HTTP status codes outside the range of 2xx.
+- how to know the package is suitable for frontend or backend
+  - Check the Imports/Requires
+- export type in ts and import in another file is available
+
+- AxiosResponse
+
+  ```
+  If your API response includes additional metadata like status, message, or error
+  =>await axios.post<CreateUserRequest, CreateUserResponse>(url, data);
+
+  Otherwise
+  const response = await axios.post<CreateUserRequest, AxiosResponse<ApiResponse<CreateUserResponse>>>(
+  url,
+  data
+  );
+
+  ```
+
+# React and Type Script
+
+### Installation
+
+```
+npx create-react-app . --template typescript
+npm list ajv
+npm install --save-dev ajv@^XXXXX
+npm install --save react-router-dom
+npm install --save-dev @types/react-router-dom
+```
+
+### Important
+
+- When handlers are called in the child components, they trigger the state update functions in the parent component.
+
+### Differences using TS
+
+```
+- useState<Todo[]>
+- const todoDeleteHandler = (todoId: string) => {
+    setTodos((prevTodos) => {
+      return prevTodos.filter((todo) => todo.id !== todoId);
+    });
+  };
+- const NewTodo = ({ onAddTodo }: NewTodoProps) => {
+    const textInputRef = useRef<HTMLInputElement>(null);
+
+    const todoSubmitHandler = (event: React.FormEvent) => {
+      event.preventDefault();
+      const enteredText = textInputRef.current!.value;
+      onAddTodo(enteredText);
+    };
+
+    return (
+      <form onSubmit={todoSubmitHandler}>
+        <div className="form-control">
+          <label htmlFor="todo-text">Todo text</label>
+          <input type="text" id="todo-text" ref={textInputRef} />
+        </div>
+        <button type="submit">Add Todo</button>
+      </form>
+    );
+  };
+```
