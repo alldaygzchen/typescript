@@ -1701,14 +1701,29 @@ fetchDataAsync();
 - AxiosResponse
 
   ```
-  If your API response includes additional metadata like status, message, or error
-  =>await axios.post<CreateUserRequest, CreateUserResponse>(url, data);
+    // Correct and complete typing
+    axios.post<CreateUserResponse,AxiosResponse<ApiResponse<CreateUserResponse>>,CreateUserRequest>(url,data)
 
-  Otherwise
-  const response = await axios.post<CreateUserRequest, AxiosResponse<ApiResponse<CreateUserResponse>>>(
-  url,
-  data
-  );
+    // Simplify typing
+    axios.post<ApiResponse<CreateUserResponse>>(url,data)
+
+    // Custom Wrapper
+    const postRequest = <T,D>(url:string,data:D)=>{
+      return axios.post<ApiResponse<T>>(url,data)
+    }
+
+  ```
+
+- Interface
+
+  ```
+    interface ResponsePrice{
+    name:string,
+    price:number
+    }
+
+    // it only works if all meets the requirement
+    let a:ResponsePrice = {name:'gz',price:20}
 
   ```
 
@@ -1726,7 +1741,7 @@ npm install --save-dev @types/react-router-dom
 
 ### Important
 
-- When handlers are called in the child components, they trigger the state update functions in the parent component.
+- When handlers are called in the child components, they trigger the state update functions in the parent component. The state is updated in the parent component even though the handlers are executed in the child components.
 
 ### Differences using TS
 
