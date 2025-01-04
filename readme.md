@@ -1772,3 +1772,69 @@ npm install --save-dev @types/react-router-dom
     );
   };
 ```
+
+# Node.js + Express + Typescript
+
+- Basic command
+
+  ```
+    tsc app.ts
+    node app.ts
+  ```
+
+- Installation
+
+  ```
+    npm init
+    tsc --init
+    change settings of tsconfig.json
+      - "target": "es2018"
+      - "rootDir": "./src"
+      - "moduleResolution": "node"
+      -  "outDir": "./dist"
+
+     npm install --save express body-parser
+     npm install --save-dev nodemon
+     npm install --save-dev @types/node
+     npm install --save-dev @types/express
+  ```
+
+- Additional Info
+
+  ```
+    ES Modules Support: Node.js has native support for ES modules (import/export) starting from version 12. However, you need to enable it by using the .mjs file extension or setting "type": "module" in your package.json.
+
+    Transpilation: If you're using TypeScript, the TypeScript compiler can transpile import statements to CommonJS (require) syntax, allowing you to use ES module syntax in your TypeScript code while running it in Node.js.
+  ```
+
+  ```
+  Use Webpack if you need full control and advanced customization.
+  Use Vite for a faster and simpler React development experience.
+  Use nodemon for your Express backend during development and avoid Webpack here.
+  ```
+
+- Additional Info
+
+  ```
+  type me = {
+    id:number,
+    name:string
+  }
+
+  const gz = {id:1,name:'gonzalo','nickname':'gz'} as me
+  ```
+
+### Differences using TS
+
+```
+const TODOS: Todo[] = [];
+
+export const createTodo: RequestHandler = (req, res, next) => {}
+
+const text = (req.body as { text: string }).text;
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  res.status(500).json({ message: err.message });
+});
+
+```
